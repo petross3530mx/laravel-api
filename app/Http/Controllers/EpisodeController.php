@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Episode;
+use App\Services\Formatter;
 use Illuminate\Http\Request;
 
 class EpisodeController extends Controller
@@ -12,30 +13,35 @@ class EpisodeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function index(Request $request)
+    {   
+        $eloquent_params = Formatter::formatEloquent(Episode::$default_limit, $request);
+
+        $result =  Episode::with(['characters', 'quotes'])->skip($eloquent_params->skip)->take($eloquent_params->limit)->get();
+
+        $count = Episode::all()->count() ?? 0;
+
+        $errors = sizeof($result) ? false :'Nothing found';
+
+        return  Formatter::getResponse($result->toArray(), $eloquent_params, $errors, $count);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
+     * Display the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Reques
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function get(Request $request)
     {
-        //
+        //return  Episode::findOrFail($request->id);
+
+        if( $episode = Episode::find($request->id) ){
+            return Formatter::getResponse($episode);
+        }
+        return response('Not Found', 404);
+  
     }
 
     /**

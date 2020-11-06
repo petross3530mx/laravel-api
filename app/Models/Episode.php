@@ -23,4 +23,6 @@ class Episode extends Model
     {
     return $this->belongsToMany(Character::class);
     }
+
+    public static $default_limit = 10;
 }

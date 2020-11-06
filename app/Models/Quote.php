@@ -20,4 +20,6 @@ class Quote extends Model
     {
       return $this->belongsTo(Character::class);
     }
+
+    public static $default_limit = 10;
 }

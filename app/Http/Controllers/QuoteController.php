@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Quote;
+use App\Services\Formatter;
 use Illuminate\Http\Request;
 
 class QuoteController extends Controller
@@ -12,9 +13,19 @@ class QuoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $eloquent_params = Formatter::formatEloquent(Quote::$default_limit, $request);
+
+        $result =  Quote::skip($eloquent_params->skip)->take($eloquent_params->limit)->get();
+
+        $count = Quote::all()->count() ?? 0;
+
+        $errors = sizeof($result) ? false :'Nothing found';
+
+        return  Formatter::getResponse($result->toArray(), $eloquent_params, $errors, $count);
+
+
     }
 
     /**
@@ -22,9 +33,19 @@ class QuoteController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function random(Request $request)
     {
-        //
+        $author =  $request->author;
+
+        $eloquent_params = Formatter::formatEloquent(Quote::$default_limit, $request);
+        
+        $result =  Quote::join('characters', 'quotes.character_id', '=', 'characters.id', 'left outer')->where('characters.name', $author)->get()->skip($eloquent_params->skip)->take($eloquent_params->limit);
+
+        $count = Quote::join('characters', 'quotes.character_id', '=', 'characters.id', 'left outer')->where('characters.name', $author)->count() ?? 0;
+    
+        $errors = sizeof($result) ? false :'Nothing found';
+
+        return  Formatter::getResponse($result->toArray(), $eloquent_params, $errors, $count);
     }
 
     /**

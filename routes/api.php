@@ -17,3 +17,33 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+
+
+Route::group(['namespace' => '\App\Http\Controllers'], function() {
+
+    Route::prefix('/episodes')->group(function(){
+
+        Route::get('/{id}', 'EpisodeController@get')->where(['id'=> '[0-9]+']);
+    
+        Route::get('/', 'EpisodeController@index')->name('get_episodes');
+    
+    });
+
+    Route::prefix('/characters')->group(function(){
+
+        Route::get('/random', 'CharacterController@random');
+    
+        Route::get('/', 'CharacterController@index');
+    
+    });
+
+    Route::prefix('/quotes')->group(function(){
+
+        Route::get('/random', 'QuoteController@random');
+    
+        Route::get('/', 'QuoteController@index');
+    
+    });
+    
+});

@@ -23,4 +23,6 @@ class Character extends Model
     {
     return $this->belongsToMany(Episode::class);
     }
+
+    public static $default_limit = 10;
 }
