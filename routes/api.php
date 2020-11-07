@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 
-Route::group(['namespace' => '\App\Http\Controllers'], function() {
+Route::group(['namespace' => '\App\Http\Controllers', 'middleware' => 'auth:api'], function() {
 
     Route::prefix('/episodes')->group(function(){
 
